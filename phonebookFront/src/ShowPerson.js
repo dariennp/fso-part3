@@ -2,10 +2,10 @@ const ShowPerson = ({personsToShow,removePerson}) =>{
     return (
     <ul>
         {personsToShow.map(person =>
-        <> 
-        <li key={person.id}> {person.name} : {person.number}</li> 
+        <div key={person.id}> 
+            <li key={person.name} > {person.name} : {person.number}</li> 
         <button onClick={() => removePerson(person.id,person.name)}> Delete </button>
-        </> )}
+        </div> )}
     </ul>
     )
 }
