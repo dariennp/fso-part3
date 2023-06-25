@@ -12,6 +12,9 @@ const errorHandler = (error, request, response, next) => {
     
     return response.status(400).send({ error: 'malformatted id' })
   } 
+  else if (error.name === 'ValidationError'){
+    return response.status(400).send({error:error.message})
+  }
   next(error)
 }
 
@@ -24,26 +27,6 @@ morgan.token('person', function (request,response) {return JSON.stringify(reques
 app.use(morgan(':method :url :status :res[content-length] :response-time ms :person'))
 
 let persons = [
-    { 
-      "id": 1,
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": 2,
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": 3,
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": 4,
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
 ]
 
 app.get('/info', (request, response) => {
@@ -85,42 +68,35 @@ app.delete('/api/persons/:id',(request,response,next)=> {
 // }
 
 const nameExists = (name) =>{
-    const entry = persons.find(person => person.name === name)
+    const entry = persons.find(person => person.name.toLowerCase() === name.toLowerCase())
     if (entry){
-        console.log("true")
         return true
     }
     else {
-        console.log("false")
         return false
     }
 }
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response,next) => {
     const body = request.body
   
-    if (body.name === undefined || !body.number === undefined ) {
-      return response.status(400).json({ 
-        error: 'content missing' 
-      })
+    const exists= nameExists(body.name)
+    if (exists){
+        return response.status(400).json({
+            error: "Name already exists"
+        })
     }
-    else {
-        const exists= nameExists(body.name)
-        if (exists){
-            return response.status(400).json({
-                error: "Name already exists"
-            })
-        }
-    } 
-  
+    
     const person = Entry({
       name: body.name,
       number: body.number,
     })
   
-    person.save().then(savedEntry => {
+    person.save()
+    .then(savedEntry => {
       response.json(savedEntry)
     })
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request,response, next ) => {
