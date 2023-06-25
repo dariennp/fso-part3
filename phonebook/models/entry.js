@@ -13,19 +13,19 @@ mongoose.connect(url)
   })
 
 function phoneNumValidate(num){
-    return (/\d{3}-/.test(num) || /\d{2}-/.test(num))
-} 
+  return (/\d{3}-/.test(num) || /\d{2}-/.test(num))
+}
 
 const entrySchema = new mongoose.Schema({
-    name: {
-        type:String,
-        minLength: 3,
-    },
-    number: {
-        type:String,
-        minLength:8,
-        validate:phoneNumValidate
-    }
+  name: {
+    type:String,
+    minLength: 3,
+  },
+  number: {
+    type:String,
+    minLength:8,
+    validate:phoneNumValidate
+  }
 })
 
 const Entry = mongoose.model('Entry', entrySchema)
@@ -42,12 +42,12 @@ const Entry = mongoose.model('Entry', entrySchema)
 // }
 
 entrySchema.set('toJSON', {
-    transform: (document, returnedObject) => {
-      returnedObject.id = returnedObject._id.toString()
-      delete returnedObject._id
-      delete returnedObject.__v
-    }
-  })
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+  }
+})
 
 module.exports = mongoose.model('Entry',entrySchema)
 
