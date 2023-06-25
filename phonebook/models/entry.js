@@ -11,11 +11,21 @@ mongoose.connect(url)
   .catch((error) => {
     console.log('error connecting to MongoDB:', error.message)
   })
-    
+
+function phoneNumValidate(num){
+    return (/\d{3}-/.test(num) || /\d{2}-/.test(num))
+} 
 
 const entrySchema = new mongoose.Schema({
-    name: String, 
-    number: String
+    name: {
+        type:String,
+        minLength: 3,
+    },
+    number: {
+        type:String,
+        minLength:8,
+        validate:phoneNumValidate
+    }
 })
 
 const Entry = mongoose.model('Entry', entrySchema)
